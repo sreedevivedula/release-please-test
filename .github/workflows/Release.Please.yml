@@ -27,7 +27,7 @@ jobs:
           echo "**Release Created:** '${{ steps.release.outputs.release_created }}'" >> $GITHUB_STEP_SUMMARY
           echo "**Tag Name:** '${{ steps.release.outputs.tag_name }}'" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** '${{ steps.release.outputs.version }}'" >> $GITHUB_STEP_SUMMARY
-          echo "**PRs:** '${{ steps.release.outputs.prs }}'" >> $GITHUB_STEP_SUMMARY
+          echo ${{ steps.release.outputs.prs }} $GITHUB_STEP_SUMMARY
 
       - name: Output PR Version
         if: steps.release.outputs.prs != ''
