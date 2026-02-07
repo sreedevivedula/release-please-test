@@ -1,0 +1,30 @@
+name: Release Please Test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+      prs: ${{ steps.release.outputs.prs }}
+    steps:
+      - name: Run Release Please
+        id: release
+        uses: googleapis/release-please-action@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Output Release Details
+        run: |
+          echo "### 🚀 Release Summary" >> $GITHUB_STEP_SUMMARY
+          echo "**Release Created:** ${{ steps.release.outputs.release_created }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag Name:** ${{ steps.release.outputs.tag_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.release.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**PRs:** ${{ steps.release.outputs.prs }}" >> $GITHUB_STEP_SUMMARY
