@@ -27,4 +27,25 @@ jobs:
           echo "**Release Created:** '${{ steps.release.outputs.release_created }}'" >> $GITHUB_STEP_SUMMARY
           echo "**Tag Name:** '${{ steps.release.outputs.tag_name }}'" >> $GITHUB_STEP_SUMMARY
           echo "**Version:** '${{ steps.release.outputs.version }}'" >> $GITHUB_STEP_SUMMARY
-          echo ${{ steps.release.outputs.prs }} >> $GITHUB_STEP_SUMMARY
+          echo "**PRs:** '${{ steps.release.outputs.prs }}'" >> $GITHUB_STEP_SUMMARY
+
+      - name: Output PR Version
+        if: steps.release.outputs.prs != ''
+        run: |
+          PRS='${{ steps.release.outputs.prs }}'
+          echo "Raw PRs output: $PRS"
+
+          # Extract the first PR title from the JSON array
+          PR_TITLE=$(echo "$PRS" | jq -r '.[0].title // empty')
+          echo "PR Title: $PR_TITLE"
+
+          # Extract version number from the title (matches patterns like 0.2.0, 1.0.0, etc.)
+          VERSION=$(echo "$PR_TITLE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+
+          if [ -n "$VERSION" ]; then
+            echo "### 📦 Parsed Version" >> $GITHUB_STEP_SUMMARY
+            echo "**Version from PR Title:** $VERSION" >> $GITHUB_STEP_SUMMARY
+            echo "Extracted Version: $VERSION"
+          else
+            echo "No version found in PR title"
+          fi
